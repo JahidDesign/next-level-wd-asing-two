@@ -11,7 +11,12 @@ interface JwtPayload {
   role: UserRole;
 }
 
-export function authGuard(req: Request, res: Response, next: NextFunction) {
+
+export interface AuthRequest extends Request {
+  user?: JwtPayload;
+}
+
+export function authGuard(req: AuthRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -28,7 +33,6 @@ export function authGuard(req: Request, res: Response, next: NextFunction) {
   try {
     const decoded = jwt.verify(token, config.jwt.secret) as JwtPayload;
 
-    
     req.user = {
       id: decoded.id,
       email: decoded.email,
@@ -47,7 +51,7 @@ export function authGuard(req: Request, res: Response, next: NextFunction) {
 }
 
 export function requireRole(role: UserRole) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return sendError(res, 401, "Unauthorized");
     }
@@ -65,7 +69,7 @@ export function requireRole(role: UserRole) {
   };
 }
 
-export function requireAdmin(req: Request, res: Response, next: NextFunction) {
+export function requireAdmin(req: AuthRequest, res: Response, next: NextFunction) {
   if (!req.user) {
     return sendError(res, 401, "Unauthorized");
   }
