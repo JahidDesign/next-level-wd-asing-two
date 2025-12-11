@@ -1,4 +1,3 @@
-//users.service.ts
 import { query } from '../../db/index';
 import { ApiError } from '../../utils/ApiError';
 

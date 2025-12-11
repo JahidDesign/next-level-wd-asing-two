@@ -1,8 +1,6 @@
-// src/modules/auth/auth.service.ts
-
 import bcrypt from "bcrypt";
 import jwt, { Secret, SignOptions } from "jsonwebtoken";
-import { db } from "../../db";
+import  db  from "../../db/db";
 import { config } from "../../config/env";
 import { ApiError } from "../../utils/ApiError";
 import { User, UserRole } from "../users/user.types";

@@ -1,15 +1,21 @@
 import { Pool, QueryResult, QueryResultRow } from "pg";
-import { config } from "../config/env";
+import config from "../config/env";
 
-export const pool = new Pool({
-  connectionString: config.db.connectionString,
-});
+const connectionString = config.db.connectionString ?? "";
 
-export const query = <T extends QueryResultRow = QueryResultRow>(
+if (!connectionString) throw new Error("DATABASE_URL is not defined");
+
+const isLocalHost = (cs: string) =>
+  /@(localhost|127\.0\.0\.1|::1)(:|\/|$)/i.test(cs) ||
+  /^postgres(?:ql)?:\/\/(localhost|127\.0\.0\.1|::1)/i.test(cs);
+
+const ssl = isLocalHost(connectionString) ? false : { rejectUnauthorized: false };
+
+const pool = new Pool({ connectionString, ssl });
+
+export const query = async <T extends QueryResultRow = QueryResultRow>(
   text: string,
   params?: any[]
-): Promise<QueryResult<T>> => {
-  return pool.query<T>(text, params);
-};
+) => pool.query<T>(text, params);
 
-export const db = { query };
+export default pool;

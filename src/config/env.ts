@@ -6,7 +6,7 @@ dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
 });
 
-// Debug (optional)
+
 console.log("ENV DATABASE_URL:", process.env.DATABASE_URL);
 
 export const config = {
